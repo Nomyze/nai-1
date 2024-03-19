@@ -32,25 +32,25 @@ fn main() {
     let mut hit = 0;
     for rek in test.records {
         let res = train_data.classify(k, &rek.attribs);
-        println!("{:?}", &rek.attribs);
-        println!("{}", &res);
+        println!("Test data: {:?} {}", &rek.attribs, &rek.class);
+        println!("Classified as: {}", &res);
         count += 1;
         if res.eq(&rek.class) {
             hit += 1;
         }
     }
-    println!("Test count: {}\nHit count: {}\nPercentage: {}%", count, hit, hit as f64 / count as f64 * 100.0); 
+    println!("Test count: {}\nHit count: {}\nPercentage: {:.2}%", count, hit, hit as f64 / count as f64 * 100.0); 
 
     println!("Insert vector to classify: [attrb1 <whitespace> attrb2 <whitespace> ..] or 'q' to end");
-    buffer = String::new();
+    buffer.clear();
     let _ = stdin.read_line(&mut buffer);
     while !buffer.trim().eq("q") {
         let rek = line_to_rekord(buffer.trim(), true);
-        println!("{:?}", rek.attribs);
-        println!("{}", train_data.classify(k, &rek.attribs));
+        println!("Testing: {:?}", rek.attribs);
+        println!("Classified as: {}", train_data.classify(k, &rek.attribs));
 
         println!("Insert vector to classify: [attrb1 <whitespace> attrb2 <whitespace> ..] or 'q' to end");
-        buffer = String::new();
+        buffer.clear();
         let _ = stdin.read_line(&mut buffer);
     }
 }
