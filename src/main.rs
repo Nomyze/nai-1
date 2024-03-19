@@ -1,6 +1,7 @@
 use std::fs;
 use std::io;
 use std::collections::HashMap;
+use std::io::Write;
 
 
 #[derive(Clone)]
@@ -22,6 +23,8 @@ fn main() {
     });
     let mut buffer = String::new();
     let stdin = io::stdin();
+    print!("k: ");
+    std::io::stdout().flush().unwrap();
     let _ = stdin.read_line(&mut buffer);
     let k = buffer.trim().parse::<i32>().expect("Failed to convert to an integer");
     let test = from_file("iris_test.txt");
@@ -29,6 +32,7 @@ fn main() {
     let mut hit = 0;
     for rek in test.records {
         let res = train_data.classify(k, &rek.attribs);
+        println!("{:?}", &rek.attribs);
         println!("{}", &res);
         count += 1;
         if res.eq(&rek.class) {
@@ -42,6 +46,7 @@ fn main() {
     let _ = stdin.read_line(&mut buffer);
     while !buffer.trim().eq("q") {
         let rek = line_to_rekord(buffer.trim(), true);
+        println!("{:?}", rek.attribs);
         println!("{}", train_data.classify(k, &rek.attribs));
 
         println!("Insert vector to classify: [attrb1 <whitespace> attrb2 <whitespace> ..] or 'q' to end");
@@ -68,7 +73,15 @@ fn line_to_rekord(line: &str, noclass: bool) -> Rekord {
         cls = columns.next_back().unwrap().to_string();
     }
     for atr in columns {
-        atrs.push(atr.trim().replace(',', ".").parse::<f64>().unwrap());
+        let parsed = match atr.trim().replace(',', ".").parse::<f64>() {
+            Ok(x) => x,
+            Err(_) => {
+                eprintln!(r"Error parsing `{}` to f64 falling back to 0.0f", atr);
+                0.
+            },
+        };
+
+        atrs.push(parsed);
     }
     Rekord {
         attribs: atrs,
